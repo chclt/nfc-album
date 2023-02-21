@@ -109,7 +109,7 @@
     <md-dialog class="dialog-help">
         <ol class="p-4 flex flex-col gap-4 list-decimal">
             <li>Login to <a class="underline" href="https://developer.spotify.com/dashboard/">Spotify Developers' Dashboard</a>, and <strong>Create an App</strong>. In app's overview page, you can get the <strong>Client ID</strong> and the <strong>Client Secret</strong>.</li>
-            <li>Click <strong class="uppercase">Edit Settings</strong>, find the <strong>Redirect URIs</strong> section, add 'https://192.168.8.179' to the list, never forget to click <strong>Save</strong> button in the bottom of this dialog.</li>
+            <li>Click <strong class="uppercase">Edit Settings</strong>, find the <strong>Redirect URIs</strong> section, add 'https://chclt.github.io/nfc-album/' to the list, never forget to click <strong>Save</strong> button in the bottom of this dialog.</li>
             <li>All preparations are done. Now, enter your <strong>Client ID</strong> and your <strong>Client Secret</strong>, then click <strong>Link Account</strong> button, if everything goes well, your Spotify library will appear in the list.</li>
             <li>After you have selected all items you desired, click <strong>Start to Match NFC Tags</strong> button. From now on, every time you scan your NFC tag, the actived item will be matched with this NFC tag.</li>
             <li>At any time, <strong>Export Tasker XML File</strong>, and import the it to Tasker.</li>
@@ -363,7 +363,7 @@
     }
 
     let App = new MainApp({
-        'redirect_uri' : 'https://192.168.8.179',
+        'redirect_uri' : 'https://chclt.github.io/nfc-album/',
         'client_id'    : client_id,
         'client_secret': client_secret,
         'code'         : code,
