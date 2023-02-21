@@ -358,7 +358,9 @@
         code = url.searchParams.get('code');
         document.querySelector('.config [name="code"]').value = code;
         localStorage.setItem('code', code);
-        window.history.replaceState({}, document.title, "/");
+        // remove search params
+        url.search = '';
+        window.history.replaceState({}, document.title, url.href);
         auto_connect = true;
     }
 
