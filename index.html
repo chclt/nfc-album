@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC Album</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[var(--md-sys-color-surface)]">
+    <script src="bundle.js"></script>
+
+    <header class="w-full h-16 bg-[var(--md-sys-color-surface)]">
+        <div class="px-4 py-2 w-full h-full max-w-screen-md mx-auto flex justify-between items-center">
+            <div class="flex gap-4">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
+                    <path class="fill-[var(--md-sys-color-on-surface)]" d="M480 976q-82 0-155-31.5t-127.5-86Q143 804 111.5 731T80 576q0-83 31.5-156t86-127Q252 239 325 207.5T480 176q83 0 156 31.5T763 293q54 54 85.5 127T880 576q0 82-31.5 155T763 858.5q-54 54.5-127 86T480 976Zm0-60q142 0 241-99.5T820 576q0-142-99-241t-241-99q-141 0-240.5 99T140 576q0 141 99.5 240.5T480 916Zm0-340Z"/>
+                </svg>
+                <span class="font-medium text-[var(--md-sys-color-on-surface)]">NFC Album for Spotify</span>
+            </div>
+            <md-text-button class="btn-help" label="help?">
+            </md-text-button>            
+        </div>
+    </header>
+
+    <main class="w-full max-w-screen-md mx-auto">
+        <section class="mt-8 px-8">
+            <form class="config flex flex-col gap-8">
+                <md-filled-text-field label="Spotify Client ID"     name="client_id"     value=""></md-filled-text-field>
+                <md-filled-text-field label="Spotify Client Secret" name="client_secret" value=""></md-filled-text-field>
+                <md-filled-text-field label="Spotify Code"          name="code"         value="Fill config above and click LINK ACCOUNT button." disabled></md-filled-text-field>
+                <md-tonal-button label="Link Account" type="submit" class="btn-link-account">
+                    <svg slot="icon" viewBox="0 96 960 960" width="48"><path d="M450 776H280q-83 0-141.5-58.5T80 576q0-83 58.5-141.5T280 376h170v60H280q-58.333 0-99.167 40.765-40.833 40.764-40.833 99Q140 634 180.833 675q40.834 41 99.167 41h170v60ZM325 606v-60h310v60H325Zm185 170v-60h170q58.333 0 99.167-40.765 40.833-40.764 40.833-99Q820 518 779.167 477 738.333 436 680 436H510v-60h170q83 0 141.5 58.5T880 576q0 83-58.5 141.5T680 776H510Z"/></svg>
+                </md-tonal-button>                    
+            </form>
+        </section>
+
+        <section class="item-checkboxs mt-8 px-8 flex flex-col gap-8">
+            <div class="flex gap-4">
+                <label for="filter-playlist" class="md-chip selected">歌单</label>
+                <label for="filter-album" class="md-chip">专辑</label>
+                <label for="filter-artist" class="md-chip">艺人</label>
+            </div>
+
+            <input type="radio" name="filter" id="filter-playlist" hidden checked>
+            <input type="radio" name="filter" id="filter-album" hidden>
+            <input type="radio" name="filter" id="filter-artist" hidden>
+
+            
+            <md-list class="list-playlists hidden"></md-list>
+            <md-list class="list-albums hidden"></md-list>
+            <md-list class="list-artists hidden"></md-list>
+
+            <md-tonal-button label="Start Scan NFC" type="submit" class="btn-scan-next"></md-tonal-button>                    
+        
+        </section>
+
+        <section class="scan mt-8 mb-8 px-8 flex flex-col gap-8">
+            <div class="item-preview-container">
+                <div class="item-preview">
+
+                </div>
+            </div>
+
+
+            <style>
+                .item-preview-container {
+                    width: 100%;
+                    padding-bottom: 66.66666666%;
+                    position: relative;
+                }
+
+                .item-preview {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: stretch;
+                }
+
+                .item {
+                    width: 0;
+                    cursor: pointer;
+                    transition-property: width, padding-left, padding-right;
+                    transition-duration: 0.3s;
+                    transition-timing-function: ease-in-out;
+                }
+
+                .item.selected {
+                    width: 66.66666666%;
+                }
+                .item.pre-selected, .item-placeholder {
+                    width: 16.66666666%;
+                }
+                .pre-selected {
+                    padding: 0 0.25rem;
+                }
+
+            </style>
+            <div class="log">
+
+            </div>
+            <md-tonal-button label="Export Tasker XML File" class="btn-export"></md-tonal-button>
+        </section>
+    </main>
+
+    <md-dialog class="dialog-help">
+        <ol class="p-4 flex flex-col gap-4 list-decimal">
+            <li>Login to <a class="underline" href="https://developer.spotify.com/dashboard/">Spotify Developers' Dashboard</a>, and <strong>Create an App</strong>. In app's overview page, you can get the <strong>Client ID</strong> and the <strong>Client Secret</strong>.</li>
+            <li>Click <strong class="uppercase">Edit Settings</strong>, find the <strong>Redirect URIs</strong> section, add 'https://192.168.8.179' to the list, never forget to click <strong>Save</strong> button in the bottom of this dialog.</li>
+            <li>All preparations are done. Now, enter your <strong>Client ID</strong> and your <strong>Client Secret</strong>, then click <strong>Link Account</strong> button, if everything goes well, your Spotify library will appear in the list.</li>
+            <li>After you have selected all items you desired, click <strong>Start to Match NFC Tags</strong> button. From now on, every time you scan your NFC tag, the actived item will be matched with this NFC tag.</li>
+            <li>At any time, <strong>Export Tasker XML File</strong>, and import the it to Tasker.</li>
+        </ol>
+    </md-dialog>
+
+<!--
+<span>md-divider</span>
+-->
+
+<script>
+    class MainApp {
+        constructor(config) {
+            this.config = config;
+            this.data = {
+                'playlists': [],
+                'albums': [],
+                'artists': []
+            };
+        }
+
+        async spotify_connect() {
+            if(! this.config['code']) {
+                let scopes = 'user-library-read playlist-read-private user-follow-read';
+                let url = new URL('https://accounts.spotify.com/authorize');
+                url.searchParams.append('response_type', 'code');
+                url.searchParams.append('client_id', this.config['client_id']);
+                url.searchParams.append('scope', scopes);
+                url.searchParams.append('redirect_uri', this.config['redirect_uri']);
+                window.open(url, '_self');
+            } else if(! this.config['refresh_token']) {
+                let response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(this.config['client_id'] + ':' + this.config['client_secret']),
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'grant_type': 'authorization_code',
+                        'code': this.config['code'],
+                        'redirect_uri': this.config['redirect_uri']
+                    })
+                });
+                if(response.ok && response.status == 200) {
+                    let data = await response.json();
+                    this.config['access_token'] = data.access_token;
+                    this.config['refresh_token'] = data.refresh_token;
+    
+                    localStorage.setItem('access_token', this.config['access_token']);
+                    localStorage.setItem('refresh_token', this.config['refresh_token']);
+                    this.spotify_connect();
+                } else {
+                    let error = await response.json();
+                    if(error['error_description'] == 'Authorization code expired' || error['error_description'] == 'Invalid authorization code') {
+                        this.config['code'] = null;
+                        this.config['refresh_token'] = null;
+                        this.config['access_token'] = null;
+                        this.spotify_connect();
+                    } else {
+                        console.log(error);
+                    }
+                }            
+                
+            } else if(! this.config['access_token']) {
+                // refresh token
+                let response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(this.config['client_id'] + ':' + this.config['client_secret']),
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'grant_type': 'refresh_token',
+                        'refresh_token': this.config['refresh_token']
+                    })
+                });
+
+                if(response.ok && response.status == 200) {
+                    let data = await response.json();
+                    this.config['access_token'] = data.access_token;
+                    localStorage.setItem('access_token', access_token);
+
+                    this.spotify_connect();
+                } else {
+                    let error = await response.json();
+                    if(error['error_description'] == 'Authorization code expired' || error['error_description'] == 'Invalid authorization code') {
+                        this.config['code'] = null;
+                        this.config['refresh_token'] = null;
+                        this.config['access_token'] = null;
+                        this.spotify_connect();
+                    }
+                }
+            } else {
+                // check if token is expired
+                let response = await fetch('https://api.spotify.com/v1/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + this.config['access_token'],
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if(response.ok && response.status == 200) {
+                    console.log('Connected to Spotify successfully!');
+                    let data = await response.json();
+                    this.data_add_new('playlists', {
+                        name: '已点赞的歌曲',
+                        images: [{
+                            url: 'https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png'
+                        }],
+                        uri: `${ data.uri }:collection`
+                    });
+
+                    this.spotify_get_my_library('playlists');
+                    this.spotify_get_my_library('albums');
+                    this.spotify_get_my_library('artists');
+                } else {
+                    let data = await response.json();
+                    if (data.error['message'] == 'The access token expired') {
+                        this.config['access_token'] = null;
+                        this.spotify_connect();
+                    } else if(data.error['message'] == 'Invalid access token') {
+                        this.config['access_token'] = null;
+                        this.config['refresh_token'] = null;
+                        this.spotify_connect();
+                    } else {
+                        console.log(data.error);
+                    }
+                }
+
+
+
+            
+            }
+        }
+        
+        async spotify_get_my_library(type) {
+            let response, data;
+            switch(type) {
+                case 'playlists':
+                    response = await fetch('https://api.spotify.com/v1/me/playlists', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + this.config['access_token'],
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if(response.ok && response.status == 200) {
+                        data = await response.json();
+                        data.items.forEach(item => {
+                            this.data_add_new('playlists', item);
+                        }, this);
+                    } else {
+                        let error = await response.json();
+                        console.log(error);
+                    }
+                    break;
+                case 'albums':
+                    response = await fetch('https://api.spotify.com/v1/me/albums', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + this.config['access_token'],
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if(response.ok && response.status == 200) {
+                        data = await response.json();
+                        data.items.forEach(item => {
+                            this.data_add_new('albums', item);
+                        }, this);
+                    } else {
+                        let error = await response.json();
+                        console.log(error);
+                    }
+                    break;
+                case 'artists':
+                    response = await fetch('https://api.spotify.com/v1/me/following?type=artist', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + this.config['access_token'],
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if(response.ok && response.status == 200) {
+                        data = await response.json();
+                        data.artists.items.forEach(item => {
+                            this.data_add_new('artists', item);
+                        }, this);
+                    } else {
+                        let error = await response.json();
+                        console.log(error);
+                    }
+                    break;
+            }
+        }
+        
+        data_add_new(type, item) {
+            this.data[type].push(item);
+            switch(type) {
+                case 'playlists':
+                    this.config['element']['playlists_list'].innerHTML += `
+                        <md-list-item headline="${ item.name }" supportingText="${ translate('playlist', 'zh-cn') }" data-type="playlist" data-index="${ this.data.playlists.length - 1 }">
+                            <img class="ml-4 w-14 h-14" slot="start" src="${ item.images[0].url }">
+                            <md-checkbox slot="end"></md-checkbox>
+                        </md-list-item>
+                    `;
+                    break;
+                case 'albums':
+                    this.config['element']['albums_list'].innerHTML += `
+                        <md-list-item headline="${ item.album.name }" supportingText="${ translate('album', 'zh-cn') }" data-type="album" data-index="${ this.data.albums.length - 1 }">
+                            <img class="ml-4 w-14 h-14" slot="start" src="${ item.album.images[0].url }">
+                            <md-checkbox slot="end"></md-checkbox>
+                        </md-list-item>
+                    `;
+                    break;
+                case 'artists':
+                    this.config['element']['artists_list'].innerHTML += `
+                        <md-list-item headline="${ item.name }" supportingText="${ translate('artist', 'zh-cn') }" data-type="artist" data-index="${ this.data.artists.length - 1 }">
+                            <img class="ml-4 w-14 h-14" slot="start" src="${ item.images[0].url }">
+                            <md-checkbox slot="end"></md-checkbox>
+                        </md-list-item>
+                    `;
+                    break;
+            }
+        }
+
+    }
+
+    let client_id, client_secret, code, access_token, refresh_token;
+    let auto_connect = false;
+
+    client_id = localStorage.getItem('client_id') || '';
+    client_secret = localStorage.getItem('client_secret') || '';
+    code = localStorage.getItem('code') || '';
+    access_token = localStorage.getItem('access_token') || '';
+    refresh_token = localStorage.getItem('refresh_token') || '';
+
+    client_id && (document.querySelector('.config [name="client_id"]').value = client_id);
+    client_secret && (document.querySelector('.config [name="client_secret"]').value = client_secret);
+    code && (document.querySelector('.config [name="code"]').value = code);
+
+    let url = new URL(window.location.href);
+    if(url.searchParams.get('code')) {
+        code = url.searchParams.get('code');
+        document.querySelector('.config [name="code"]').value = code;
+        localStorage.setItem('code', code);
+        window.history.replaceState({}, document.title, "/");
+        auto_connect = true;
+    }
+
+    let App = new MainApp({
+        'redirect_uri' : 'https://192.168.8.179',
+        'client_id'    : client_id,
+        'client_secret': client_secret,
+        'code'         : code,
+        'access_token' : access_token,
+        'refresh_token': refresh_token,
+
+        'element': {
+            'playlists_list': document.querySelector('.list-playlists'),
+            'albums_list'   : document.querySelector('.list-albums'),
+            'artists_list'  : document.querySelector('.list-artists')
+        }
+    })
+
+    auto_connect && App.spotify_connect();
+
+    document.querySelector('.btn-link-account').addEventListener('click', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target.closest('form'));
+        client_id      = formData.get('client_id');
+        client_secret  = formData.get('client_secret');
+        App.config['client_id']     = client_id;
+        App.config['client_secret'] = client_secret;
+        App.spotify_connect();
+    });
+
+    let index = 0, items = [], nfc_album_data = {};
+    function get_uri_from(item, type) {
+        switch(type) {
+            case 'playlist':
+                return item['uri'];
+            case 'album':
+                return item['album']['uri'];
+            case 'artist':
+                return item['uri'];
+        }
+    }
+
+    function get_thumbnail_from(item, type) {
+        switch(type) {
+            case 'playlist':
+                return item['images'][0]['url'];
+            case 'album':
+                return item['album']['images'][0]['url'];
+            case 'artist':
+                return item['images'][0]['url'];
+        }
+    }
+
+    document.querySelector('.btn-scan-next').addEventListener('click', async (event) => {
+        if(index == 0) {
+            document.querySelectorAll('.item-checkboxs md-checkbox[checked]').forEach((item, itemIndex) => {
+                item = item.closest('md-list-item');
+                items.push({
+                    'type': item.dataset.type,
+                    'index': item.dataset.index,
+                });
+
+                document.querySelector('.item-preview').innerHTML +=
+                    `
+                    <div data-index="${ itemIndex }" class="item">
+                        <div class="w-full h-full">
+                            <img class="w-full h-full object-cover rounded-3xl bg-black" src="${ get_thumbnail_from(App.data[item.dataset.type + 's'][item.dataset.index], item.dataset.type) }" alt="">
+                        </div>
+                    </div>
+                    `;
+
+            });
+
+            let item_placeholder = document.createElement('div');
+            item_placeholder.classList.add('item', 'placeholder');
+
+            document.querySelector('.item-preview').insertAdjacentElement('afterbegin', item_placeholder.cloneNode(true));
+            document.querySelector('.item-preview').insertAdjacentElement('beforeend', item_placeholder.cloneNode(true));
+            document.querySelector('.item-preview .item.placeholder').classList.add('pre-selected');
+            document.querySelector('.item-preview [data-index="0"]').classList.add('selected');
+            document.querySelector('.item-preview [data-index="1"]').classList.add('pre-selected');
+
+
+            try {
+                const ndef = new NDEFReader();
+                await ndef.scan();
+            
+                ndef.addEventListener("readingerror", () => {
+                    console.error('Argh! Cannot read data from the NFC tag. Try another one?');
+                });
+            
+                ndef.addEventListener("reading", ({ message, serialNumber }) => {
+                    nfc_album_data[serialNumber.replaceAll(':', '').toUpperCase()] = get_uri_from(App.data[items[index].type + 's'][items[index].index], items[index].type);
+                    console.log(nfc_album_data);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+    });
+
+    document.querySelector('.item-preview').addEventListener('click', (event) => {
+        let item = event.target.closest('[data-index]')
+
+        if(item) {
+
+            let oldItem = document.querySelector(`.item-preview [data-index="${ index }"]`);
+            oldItem.classList.remove('selected');
+            oldItem.previousElementSibling.classList.remove('pre-selected');
+            oldItem.nextElementSibling.classList.remove('pre-selected');
+
+            index = item.dataset.index;
+            let newItem = document.querySelector(`.item-preview [data-index="${ index }"]`);
+            newItem.classList.add('selected');
+            newItem.previousElementSibling.classList.add('pre-selected');
+            newItem.nextElementSibling.classList.add('pre-selected');
+        }
+    });
+
+
+
+    document.querySelector('.item-checkboxs').addEventListener('input', (event) => {
+        let filter_id = event.target.id
+        document.querySelectorAll('.item-checkboxs .md-chip').forEach(item => {
+            if(item.getAttribute('for') != filter_id) {
+                item.classList.remove('selected');
+            } else {
+                item.classList.add('selected');
+            }
+        });
+    });
+
+    document.querySelector('.btn-export').addEventListener('click', (event) => {
+        let config= {
+            task_name: 'NFC Album',
+            data: JSON.stringify(nfc_album_data),
+        };
+        let tasker_xml = 
+`
+<TaskerData sr="" dvi="1" tv="6.1.3-beta">
+ <Task sr="task9999">
+  <cdate>${ Date.now() }</cdate>
+  <edate>${ Date.now() }</edate>
+  <id>4</id>
+  <nme>${ config.task_name }</nme>
+  <pri>6</pri>
+  <Action sr="act0" ve="7">
+   <code>330</code>
+   <Bundle sr="arg0">
+    <Vals sr="val">
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES>&lt;StringArray sr=""&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;%nfc_id
+ID
+Unique ID for the tag&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES1&gt;%nfc_payload
+Payload
+Contents of the tag in text format&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES1&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES2&gt;%nfc_present
+Present
+Contents of the tag in text format&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES2&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES3&gt;%nfc_types()
+Types
+Type of technologies the card supports&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES3&gt;&lt;/StringArray&gt;</net.dinglisch.android.tasker.RELEVANT_VARIABLES>
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>[Ljava.lang.String;</net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>
+    </Vals>
+   </Bundle>
+   <Str sr="arg1" ve="3"/>
+   <Str sr="arg2" ve="3"/>
+  </Action>
+  <Action sr="act1" ve="7">
+   <code>547</code>
+   <Str sr="arg0" ve="3">%NFC_Album</Str>
+   <Str sr="arg1" ve="3">${ config.data }</Str>
+   <Int sr="arg2" val="0"/>
+   <Int sr="arg3" val="0"/>
+   <Int sr="arg4" val="0"/>
+   <Int sr="arg5" val="3"/>
+   <Int sr="arg6" val="1"/>
+  </Action>
+  <Action sr="act2" ve="7">
+   <code>37</code>
+   <ConditionList sr="if">
+    <Condition sr="c0" ve="3">
+     <lhs>%NFC_Album[%nfc_id]</lhs>
+     <op>2</op>
+     <rhs>spotify:*</rhs>
+    </Condition>
+   </ConditionList>
+  </Action>
+  <Action sr="act3" ve="7">
+   <code>351</code>
+   <Bundle sr="arg0">
+    <Vals sr="val">
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES>&lt;StringArray sr=""&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;%http_auth_headers
+Headers
+Use this in the HTTP Request action in the 'Headers' field to authenticate the request&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;&lt;/StringArray&gt;</net.dinglisch.android.tasker.RELEVANT_VARIABLES>      
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>[Ljava.lang.String;</net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>
+    </Vals>
+   </Bundle>
+   <Int sr="arg1" val="0"/>
+   <Str sr="arg10" ve="3"/>
+   <Str sr="arg2" ve="3">${ App.config['client_id']}</Str>
+   <Str sr="arg3" ve="3">${ App.config['client_secret'] }</Str>
+   <Str sr="arg4" ve="3">https://accounts.spotify.com/authorize</Str>
+   <Str sr="arg5" ve="3">https://accounts.spotify.com/api/token</Str>
+   <Str sr="arg6" ve="3">user-modify-playback-state</Str>
+   <Int sr="arg7" val="0"/>
+   <Int sr="arg8" val="30"/>
+   <Str sr="arg9" ve="3"/>
+  </Action>
+  <Action sr="act4" ve="7">
+   <code>339</code>
+   <se>false</se>
+   <Bundle sr="arg0">
+    <Vals sr="val">
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES>&lt;StringArray sr=""&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;%http_cookies
+Cookies
+The cookies the server sent in the response in the Cookie:COOKIE_VALUE format. You can use this directly in the 'Headers' field of the HTTP Request action&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES0&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES1&gt;%http_data
+Data
+Data that the server responded from the HTTP request.&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES1&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES2&gt;%http_file_output
+File Output
+Will always contain the file's full path even if you specified a directory as the File to save.&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES2&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES3&gt;%http_response_code
+Response Code
+The HTTP Code the server responded&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES3&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES4&gt;%http_headers()
+Response Headers
+The HTTP Headers the server sent in the response. Each header is in the 'key:value' format&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES4&gt;&lt;_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES5&gt;%http_response_length
+Response Length
+The size of the response in bytes&lt;/_array_net.dinglisch.android.tasker.RELEVANT_VARIABLES5&gt;&lt;/StringArray&gt;</net.dinglisch.android.tasker.RELEVANT_VARIABLES>
+     <net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>[Ljava.lang.String;</net.dinglisch.android.tasker.RELEVANT_VARIABLES-type>
+    </Vals>
+   </Bundle>
+   <Int sr="arg1" val="3"/>
+   <Int sr="arg10" val="0"/>
+   <Int sr="arg11" val="0"/>
+   <Int sr="arg12" val="1"/>
+   <Str sr="arg2" ve="3">https://api.spotify.com/v1/me/player/play</Str>
+   <Str sr="arg3" ve="3">%http_auth_headers</Str>
+   <Str sr="arg4" ve="3"/>
+   <Str sr="arg5" ve="3">{ "context_uri": "%NFC_Album[%nfc_id]" }</Str>
+   <Str sr="arg6" ve="3"/>
+   <Str sr="arg7" ve="3"/>
+   <Int sr="arg8" val="30"/>
+   <Int sr="arg9" val="0"/>
+  </Action>
+  <Action sr="act5" ve="7">
+   <code>548</code>
+   <Str sr="arg0" ve="3">%nfc_id
+%NFC_Album[%nfc_id]</Str>
+   <Int sr="arg1" val="1"/>
+   <Str sr="arg10" ve="3"/>
+   <Int sr="arg11" val="1"/>
+   <Int sr="arg12" val="0"/>
+   <Str sr="arg13" ve="3"/>
+   <Int sr="arg14" val="0"/>
+   <Int sr="arg2" val="0"/>
+   <Str sr="arg3" ve="3"/>
+   <Str sr="arg4" ve="3"/>
+   <Str sr="arg5" ve="3"/>
+   <Str sr="arg6" ve="3"/>
+   <Str sr="arg7" ve="3"/>
+   <Str sr="arg8" ve="3"/>
+   <Int sr="arg9" val="1"/>
+  </Action>
+  <Action sr="act6" ve="7">
+   <code>38</code>
+  </Action>
+ </Task>
+</TaskerData>
+
+`;
+
+        console.log(tasker_xml);
+        // download as a file
+        var blob = new Blob([tasker_xml], {type: "application/xml;charset=utf-8"});
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'tasker_nfc_album.xml';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+
+
+    let text = {
+        'playlist': {
+            'zh-cn': '歌单',
+            'en': 'playlist'
+        },
+        'album': {
+            'zh-cn': '专辑',
+            'en': 'album'
+        },
+        'artist': {
+            'zh-cn': '艺术家',
+            'en': 'artist'
+        }
+    }
+
+    function translate(name, lang) {
+        return text[name][lang];
+    }
+
+    document.querySelector('.btn-help').addEventListener('click', function () {
+        document.querySelector('md-dialog').setAttribute('open', 'true');
+    });
+
+</script>
+
+</body>
+</html>
